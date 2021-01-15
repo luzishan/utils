@@ -194,8 +194,11 @@ public class ExcelUtil<T> {
      * @return 转换后集合
      */
     public List<T> importExcel(String sheetName, InputStream is) throws Exception {
+        //操作类型导入
         this.type = Type.IMPORT;
+        //得到一个workbook对象
         this.wb = WorkbookFactory.create(is);
+        //根据返回值的类型创建list集合
         List<T> list = new ArrayList<T>();
         Sheet sheet = null;
         if (StringUtils.isNotEmpty(sheetName)) {
@@ -209,7 +212,7 @@ public class ExcelUtil<T> {
         if (sheet == null) {
             throw new IOException("文件sheet不存在");
         }
-
+        //获取表单的物理行，不包括那些空行、隔行
         int rows = sheet.getPhysicalNumberOfRows();
 
         if (rows > 0) {
@@ -217,6 +220,7 @@ public class ExcelUtil<T> {
             Map<String, Integer> cellMap = new HashMap<String, Integer>();
             // 获取表头
             Row heard = sheet.getRow(0);
+            //getPhysicalNumberOfCells，获取不为空列的个数
             for (int i = 0; i < heard.getPhysicalNumberOfCells(); i++) {
                 Cell cell = heard.getCell(i);
                 if (StringUtils.isNotNull(cell)) {
@@ -233,6 +237,7 @@ public class ExcelUtil<T> {
             for (int col = 0; col < allFields.length; col++) {
                 Field field = allFields[col];
                 Excel attr = field.getAnnotation(Excel.class);
+                //Type，是实体类上标注的@Excel注解的类型，默认为Type.ALL
                 if (attr != null && (attr.type() == Type.ALL || attr.type() == type)) {
                     // 设置类的私有字段属性可访问.
                     field.setAccessible(true);
